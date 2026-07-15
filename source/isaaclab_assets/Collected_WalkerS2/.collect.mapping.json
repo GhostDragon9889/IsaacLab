@@ -1,0 +1,263 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Cast_Metal_Silver_Vein.mdl",
+            "source_hash": "425d634fbddd159ef39eac4bc8e6183650e3ef2c",
+            "target_url": "./SubUSDs/materials/Cast_Metal_Silver_Vein.mdl",
+            "target_hash": "593d67cb78bea1a4db5be993621f1ceb4bf0d16c"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Iron.mdl",
+            "source_hash": "e940ad0d47bd7c1ec039f1217e2d4d67f964ffb2",
+            "target_url": "./SubUSDs/materials/Iron.mdl",
+            "target_hash": "e782412b81564fc2deac81e94ded3156bb5c4532"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Paint_Gloss_Finish.mdl",
+            "source_hash": "cfad65d7efe4892321b094aeca8ea463af07608f",
+            "target_url": "./SubUSDs/materials/Paint_Gloss_Finish.mdl",
+            "target_hash": "15e94926223488439f4e2c78e756db4d43c89311"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Paint_Matte.mdl",
+            "source_hash": "1b6c44d11c46e2be0d15fd694e73be7c6b8e623d",
+            "target_url": "./SubUSDs/materials/Paint_Matte.mdl",
+            "target_hash": "e9b5cc485699f3d221150ed8a678b0c4f2f05b2d"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Paint_Matte_Finish.mdl",
+            "source_hash": "cfad65d7efe4892321b094aeca8ea463af07608f",
+            "target_url": "./SubUSDs/materials/Paint_Matte_Finish.mdl",
+            "target_hash": "6cdc7c3f98f9c9035a20c663f7cb5e995524ead3"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Plastic.mdl",
+            "source_hash": "6ba7a2996c0d2e3a48de4f5ab9fffef38d6ea4a6",
+            "target_url": "./SubUSDs/materials/Plastic.mdl",
+            "target_hash": "fddeb84e350959b9c8190f8a891543fee8d804c2"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Silver.mdl",
+            "source_hash": "c718a690421fa8b57fe0353b0f6de8a12464c0da",
+            "target_url": "./SubUSDs/materials/Silver.mdl",
+            "target_hash": "09199b29ad4eef09be4e6168a2f45b3e258052ec"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Steel_Blued.mdl",
+            "source_hash": "50508d5ca1a6128ada30c64d68bb69dd0cb4ff99",
+            "target_url": "./SubUSDs/materials/Steel_Blued.mdl",
+            "target_hash": "f84cdce5b0d42b419a6bebbb033ee4a023658929"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Steel_Carbon.mdl",
+            "source_hash": "527b78b9ac388f1709f252c29a64e766b3c4d83c",
+            "target_url": "./SubUSDs/materials/Steel_Carbon.mdl",
+            "target_hash": "7d38e9b4d5f1083155209fd926e3046bb5e05980"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/Tinted_Glass_R02.mdl",
+            "source_hash": "316cbc17db36251fbb240dfc963980a509c119f4",
+            "target_url": "./SubUSDs/materials/Tinted_Glass_R02.mdl",
+            "target_hash": "34b0aad740802b744307e44f121a735533fea69b"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/default_environment_1.usd",
+            "source_hash": "e4e6bc2d176b7fc48e70cb610b286c865e03fabf",
+            "target_url": "./SubUSDs/default_environment_1.usd",
+            "target_hash": "c93aa4f2c7327f07ea39ca83861ecf943191db1d"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/WireframeBlur_basecolor.png",
+            "source_hash": "b5dbbd8625b010e81fb8238d2f7a19c3dca54c62",
+            "target_url": "./SubUSDs/textures/WireframeBlur_basecolor.png",
+            "target_hash": "c59ca4f97c7552c0697f35738319ceb200564bba"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/WireframeBlur_blue.png",
+            "source_hash": "17b40686a389ecf3c068ff5906e019198c4ec1e3",
+            "target_url": "./SubUSDs/textures/WireframeBlur_blue.png",
+            "target_hash": "343f8cedcea41af26fa2bcb71b6706935118b1d9"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Wireframe_blue.png",
+            "source_hash": "11d9b5fd8fe84e6191803699ec7a72d6455b2363",
+            "target_url": "./SubUSDs/textures/Wireframe_blue.png",
+            "target_hash": "f6227540c9525219f3059d3c69449bbc5b08314e"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_BaseColor.png",
+            "source_hash": "00063d1a0ee81b29505c3a92ed8af22eba17c8c7",
+            "target_url": "./SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_BaseColor.png",
+            "target_hash": "10006d258e397deafb0efe425809d2542efbf891"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Iron/Iron_BaseColor.png",
+            "source_hash": "41cc4e9b2aac0d736656c90c498da322f5247f86",
+            "target_url": "./SubUSDs/textures/Iron/Iron_BaseColor.png",
+            "target_hash": "b2c5a796f0fcd673df563bfbe43c17077b5d9609"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Blued/Steel_Blued_BaseColor.png",
+            "source_hash": "78a7d7800c787f7eec41a6f36550073ed732665f",
+            "target_url": "./SubUSDs/textures/Steel_Blued/Steel_Blued_BaseColor.png",
+            "target_hash": "f7ba4951d56dd01f35e4e69464ba5523b3a3eb2d"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_BaseColor.png",
+            "source_hash": "4c09818dff76f5c4df7e2ddb7e6206e37e111fbd",
+            "target_url": "./SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_BaseColor.png",
+            "target_hash": "458ecb128ffda9d11ef19c340048f9857774c2a4"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Silver/Silver_BaseColor.png",
+            "source_hash": "9c989ae12de98aa120f2364734834cdcfe6deddc",
+            "target_url": "./SubUSDs/textures/Silver/Silver_BaseColor.png",
+            "target_hash": "8971e26e31938f74cc98de0586ef459a8dca17cc"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Carbon/Steel_Carbon_BaseColor.png",
+            "source_hash": "5a4a7898ee33303b7dce7f5064dd436d88e11c85",
+            "target_url": "./SubUSDs/textures/Steel_Carbon/Steel_Carbon_BaseColor.png",
+            "target_hash": "ad8dd1bce8e911b3acc35369a24983f120bf2a87"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_BaseColor.png",
+            "source_hash": "32cdc235123ed2f0da162454592928b4cefeda2c",
+            "target_url": "./SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_BaseColor.png",
+            "target_hash": "ce5bc08372f3e86e5348c46bcf35d3a9e0a56823"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_BaseColor.png",
+            "source_hash": "4c09818dff76f5c4df7e2ddb7e6206e37e111fbd",
+            "target_url": "./SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_BaseColor.png",
+            "target_hash": "deac4c098f312dfa403fe568bfcbc60855b26a69"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_ORM.png",
+            "source_hash": "f2cd0f652106b74fb638f571b433617b2afb12b8",
+            "target_url": "./SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_ORM.png",
+            "target_hash": "22938be707b897005a73d14a9d065c5d43a7fc88"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Iron/Iron_ORM.png",
+            "source_hash": "9fc6df479e9d18bf5fa04cdfcd5635dc2b60c8ff",
+            "target_url": "./SubUSDs/textures/Iron/Iron_ORM.png",
+            "target_hash": "fe8f2852351bc9c0505d932e8cc606eeba70c480"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Blued/Steel_Blued_ORM.png",
+            "source_hash": "e3a0e275081ad8df0f4a3795eb1ca47e06566bab",
+            "target_url": "./SubUSDs/textures/Steel_Blued/Steel_Blued_ORM.png",
+            "target_hash": "62b3ac439f9c4d67a9d4bd7d8a50f5ce1808c7a9"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/GlassWithVolume.mdl",
+            "source_hash": "de2101171952dc3bb37eee976d4259d897ad55e6",
+            "target_url": "./SubUSDs/materials/GlassWithVolume.mdl",
+            "target_hash": "62c285c1f12f9e0a4a3e9e3328ae2fc9ef0da37f"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_ORM.png",
+            "source_hash": "1699c2282410b9da3838d04f5abd49627f6e7021",
+            "target_url": "./SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_ORM.png",
+            "target_hash": "6a5c401f03f0a6e92899e9586a72a74c176527b4"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Silver/Silver_ORM.png",
+            "source_hash": "aea8903df066046fe0e3637fdca2e451ee28472f",
+            "target_url": "./SubUSDs/textures/Silver/Silver_ORM.png",
+            "target_hash": "ae49b07feac1bf985dfe842d9aaa66de847f4e87"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Carbon/Steel_Carbon_ORM.png",
+            "source_hash": "40a60c7a56b88a8e759eb2403df84402e46c929d",
+            "target_url": "./SubUSDs/textures/Steel_Carbon/Steel_Carbon_ORM.png",
+            "target_hash": "d6442623da770ef0d817632901b43242e0c09475"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_ORM.png",
+            "source_hash": "293da19913da21311c4b5fc53dd96a3d8fb93b1b",
+            "target_url": "./SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_ORM.png",
+            "target_hash": "bac0804fee798b8927dbf348ab49382ec799b283"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_ORM.png",
+            "source_hash": "40345b7dba256757befdbd5398d7962b7903941c",
+            "target_url": "./SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_ORM.png",
+            "target_hash": "3e38ea2e81b5cddf5c0cad264c507073318f41d6"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_N.png",
+            "source_hash": "ae8313fa08cfaea502d9dcd3ab541d747f989276",
+            "target_url": "./SubUSDs/textures/Cast_Metal_Silver_Vein/Cast_Metal_Silver_Vein_N.png",
+            "target_hash": "2473e5d0445bb36d2ab27d7b1614b95f9cb2014f"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Iron/Iron_N.png",
+            "source_hash": "61060b864860ce5234b91fb227e8448df6b2f0af",
+            "target_url": "./SubUSDs/textures/Iron/Iron_N.png",
+            "target_hash": "01c30c219517852a6bf2510b61ed440e57602ff8"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Blued/Steel_Blued_N.png",
+            "source_hash": "d52e3972176c33b437ff9616fd4d5e7579141762",
+            "target_url": "./SubUSDs/textures/Steel_Blued/Steel_Blued_N.png",
+            "target_hash": "9b45ef0bc6941982f2285afbf9c72d1240df5587"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_N.png",
+            "source_hash": "2ca599fa8ab81482c9a0fa1b03b7e50c2d89c71c",
+            "target_url": "./SubUSDs/textures/Paint_Matte/Paint_Matte_Finish_N.png",
+            "target_hash": "310d17916f617b970fba72bfb0f9d1f87eacf0c5"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Silver/Silver_N.png",
+            "source_hash": "1c1efea98a4e150d7e2644d820fe3e5d6ac9bb29",
+            "target_url": "./SubUSDs/textures/Silver/Silver_N.png",
+            "target_hash": "7b91a636050b9ae5b0a3548c528c9873e8b1b32a"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Steel_Carbon/Steel_Carbon_N.png",
+            "source_hash": "405fbc024037789d5d17d5f3b45af5fd5606f321",
+            "target_url": "./SubUSDs/textures/Steel_Carbon/Steel_Carbon_N.png",
+            "target_hash": "ec46a8bf4b64ff9e6e75c00697e723d37d37914b"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_N.png",
+            "source_hash": "a450b3ece48e49d6c47429212f495b73bf8d82b7",
+            "target_url": "./SubUSDs/textures/Paint_Gloss_Finish/Paint_Gloss_Finish_N.png",
+            "target_hash": "b7dbb6c6a3641b396321895535335aa5e983d892"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_N.png",
+            "source_hash": "ad349778989e2c28134192380802081c7fc32ec1",
+            "target_url": "./SubUSDs/textures/Paint_Matte_Finish/Paint_Matte_Finish_N.png",
+            "target_hash": "a853aad076a342c4620420408c46e3b0df3e1caf"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/WireframeBlur_basecolor_1.png",
+            "source_hash": "a3762701357e2236b2e9a984d28fb8f7669cdc50",
+            "target_url": "./SubUSDs/textures/WireframeBlur_basecolor_1.png",
+            "target_hash": "a61d817c4badeaf3c659b3aacbd60d397e5d1ca5"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/WireframeBlur_blue_1.png",
+            "source_hash": "2020b24ea7997c9569ad832a9a534b6e071122b1",
+            "target_url": "./SubUSDs/textures/WireframeBlur_blue_1.png",
+            "target_hash": "0ff309567be5cbdc3dd2eeb9e2747e854ad759d5"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/textures/Wireframe_blue_1.png",
+            "source_hash": "11d9b5fd8fe84e6191803699ec7a72d6455b2363",
+            "target_url": "./SubUSDs/textures/Wireframe_blue_1.png",
+            "target_hash": "723ca39d8caa8790294e057c9e64fedd3809f7db"
+        },
+        {
+            "source_url": "/home/ubt/Documents/gitlab/sortation_sps/usd/walkers2/Collected_s2_material_handv4/SubUSDs/materials/GlassUtils.mdl",
+            "source_hash": "7cfb0a56380ee63392179c3ff57114a38dcafdbf",
+            "target_url": "./SubUSDs/materials/GlassUtils.mdl",
+            "target_hash": "3b6e55b0b8a4dc2e7c99f62f0c4f67a849a11b0a"
+        }
+    ]
+}
