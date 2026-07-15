@@ -11,6 +11,8 @@ distribution of the assets easier and makes the repository smaller in size code-
 For more information, please check information on `Omniverse Nucleus`_.
 
 .. _Omniverse Nucleus: https://docs.omniverse.nvidia.com/nucleus/latest/overview/overview.html
+
+/project/Zs-Meta/IsaacAssets/Assets/Isaac/6.0
 """
 
 import io
@@ -47,7 +49,8 @@ def _parse_kit_asset_root() -> str:
     return ""
 
 
-NUCLEUS_ASSET_ROOT_DIR: str = _parse_kit_asset_root()
+# NUCLEUS_ASSET_ROOT_DIR: str = _parse_kit_asset_root()
+NUCLEUS_ASSET_ROOT_DIR = "/project/Zs-Meta/IsaacAssets/Assets/Isaac/6.0"
 """Path to the root directory on the Nucleus Server."""
 
 NVIDIA_NUCLEUS_DIR: str = f"{NUCLEUS_ASSET_ROOT_DIR}/NVIDIA"
