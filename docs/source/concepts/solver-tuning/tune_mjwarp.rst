@@ -121,6 +121,12 @@ Use ``use_mujoco_contacts=True`` for the simplest baseline. It selects
 MuJoCo's internal collision detection and cannot be combined with
 :attr:`~isaaclab_newton.physics.NewtonCfg.collision_cfg`.
 
+GPU box-box contacts use the dedicated primitive algorithm by default
+(``use_native_ccd=False``). This avoids dropped contacts at symmetric box
+placements in MuJoCo Warp 3.11. Set ``use_native_ccd=True`` to opt into its
+general convex GJK/EPA algorithm. CPU MuJoCo and Newton-pipeline contacts
+are unaffected by this setting.
+
 Set ``use_mujoco_contacts=False`` only when the task needs Newton's collision
 pipeline, such as for non-convex meshes, SDF or hydroelastic contacts. Configure
 :class:`~isaaclab_newton.physics.NewtonCollisionPipelineCfg` on

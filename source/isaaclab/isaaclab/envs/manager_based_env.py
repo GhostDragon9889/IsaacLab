@@ -15,6 +15,7 @@ from typing import Any
 import torch
 
 from isaaclab.app.loading_screen import report_activity
+from isaaclab.app.settings_manager import get_settings_manager
 from isaaclab.managers import ActionManager, EventManager, ObservationManager, RecorderManager
 from isaaclab.scene import InteractiveScene
 from isaaclab.sim import SimulationContext
@@ -584,20 +585,24 @@ class ManagerBasedEnv:
         """Set the seed for the environment.
 
         Args:
-            seed: The seed for random generator. Defaults to -1.
+            seed: The random seed. Use -1 to generate a random seed. Defaults to -1.
 
         Returns:
             The seed used for random generator.
         """
-        # set seed for replicator
+        seed = configure_seed(seed)
+        # Replicator's graph is unavailable between environments or before stage creation.
         try:
             import omni.replicator.core as rep
+            import omni.usd
 
-            rep.set_global_seed(seed)
+            if omni.usd.get_context().get_stage() is None:
+                get_settings_manager().set("/omni/replicator/globalSeed", seed)
+            else:
+                rep.set_global_seed(seed)
         except (ModuleNotFoundError, AttributeError):
             pass
-        # set seed for torch and other libraries
-        return configure_seed(seed)
+        return seed
 
     def close(self):
         """Cleanup for the environment."""

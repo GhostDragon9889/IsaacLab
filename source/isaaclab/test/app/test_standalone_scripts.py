@@ -232,6 +232,14 @@ def test_commands_respect_script_launcher_capabilities():
     )
     assert "--enable_cameras" not in usd_camera_case.command()
 
+    sensor_case = next(
+        case
+        for case in build_cases(SPECS)
+        if case.spec.relative_path == "scripts/tutorials/04_sensors/add_sensors_on_robot.py"
+        and case.visualizer == "none"
+    )
+    assert "--enable_cameras" not in sensor_case.command()
+
 
 def test_hands_demo_uses_asset_owned_shadow_hand_configs():
     """The generic hands demo must not inherit task-specific spawn policy."""
@@ -417,7 +425,10 @@ def test_subprocess_supervisor_ignores_fatal_output_after_intentional_teardown(m
     assert not result.fatal_patterns
 
 
-def test_subprocess_supervisor_classifies_buffered_fatal_output_before_intentional_teardown(monkeypatch):
+@pytest.mark.parametrize("continuous_output", [False, True])
+def test_subprocess_supervisor_classifies_buffered_fatal_output_before_intentional_teardown(
+    monkeypatch, continuous_output
+):
     """Fatal output already buffered at the soak deadline must remain test-failing."""
 
     class FakeStdout:
@@ -442,7 +453,8 @@ def test_subprocess_supervisor_classifies_buffered_fatal_output_before_intention
 
         def select(self, timeout):
             self.selections += 1
-            if self.selections > 2:
+            assert self.selections < 100, "supervisor kept draining a continuously replenished pipe"
+            if self.selections > 2 and not continuous_output:
                 return []
             key = type("Key", (), {"fileobj": self.fileobj})()
             return [(key, script_cases.selectors.EVENT_READ)]
@@ -454,7 +466,7 @@ def test_subprocess_supervisor_classifies_buffered_fatal_output_before_intention
     chunks = iter((b"READY\n", b"Traceback (most recent call last):\n"))
     monkeypatch.setattr(script_cases.subprocess, "Popen", lambda *args, **kwargs: process)
     monkeypatch.setattr(script_cases.selectors, "DefaultSelector", FakeSelector)
-    monkeypatch.setattr(script_cases.os, "read", lambda *args: next(chunks))
+    monkeypatch.setattr(script_cases.os, "read", lambda *args: next(chunks, b"x" * 65536))
     monkeypatch.setattr(script_cases, "_terminate_process_group", lambda process: setattr(process, "returncode", -15))
 
     result = run_until_ready(["demo.py"], r"READY", startup_timeout=2.0, soak_time=0.0)
@@ -667,6 +679,15 @@ def test_process_group_termination_handles_exited_and_stubborn_processes(monkeyp
     stubborn = Stubborn()
     script_cases._terminate_process_group(stubborn)
     assert signals == [(123, script_cases.signal.SIGTERM), (123, script_cases.signal.SIGKILL)]
+
+    # The group can disappear between poll()/wait() and either signal.
+    def signal_exited_group(pid, sig):
+        raise ProcessLookupError
+
+    monkeypatch.setattr(script_cases.os, "killpg", signal_exited_group)
+    raced = Stubborn()
+    script_cases._terminate_process_group(raced)
+    assert raced.waits == 2
 
 
 @pytest.mark.integration

@@ -11,6 +11,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -45,6 +46,9 @@ def setup_editor(project_dir: pathlib.Path, isaac_path: str | None = None, verbo
     """
     isaacsim_dir = resolve_isaacsim_dir(project_dir, isaac_path)
     extra_paths = build_extra_paths(project_dir, isaacsim_dir)
+    namespace_path = _create_isaacsim_namespace(project_dir, isaacsim_dir, extra_paths)
+    if namespace_path is not None:
+        extra_paths.insert(0, namespace_path.relative_to(project_dir).as_posix())
     write_pyright_config(project_dir, extra_paths)
     if verbose:
         for path in extra_paths:
@@ -95,7 +99,9 @@ def resolve_isaacsim_dir(project_dir: pathlib.Path, isaac_path: str | None = Non
     if isaac_path:
         explicit_path = pathlib.Path(isaac_path).expanduser()
         if not _is_isaacsim_dir(explicit_path):
-            raise ValueError(f"Not an Isaac Sim directory (missing .vscode/settings.json): {explicit_path}")
+            raise ValueError(
+                f"Not an Isaac Sim directory (expected SDK folders or .vscode/settings.json): {explicit_path}"
+            )
         return explicit_path.resolve()
 
     env_path = os.environ.get("ISAAC_PATH")
@@ -119,7 +125,7 @@ def resolve_isaacsim_dir(project_dir: pathlib.Path, isaac_path: str | None = Non
 
 
 def read_isaacsim_extra_paths(isaacsim_dir: pathlib.Path | None) -> list[pathlib.Path]:
-    """Read Isaac Sim's Python extension paths.
+    """Read Isaac Sim's Python extension paths, discovering pip layouts without editor metadata.
 
     Args:
         isaacsim_dir: Isaac Sim installation directory, or None.
@@ -133,8 +139,16 @@ def read_isaacsim_extra_paths(isaacsim_dir: pathlib.Path | None) -> list[pathlib
 
     settings_file = isaacsim_dir / ".vscode" / "settings.json"
     if not settings_file.is_file():
-        print(f"[WARN] Isaac Sim VS Code settings were not found: {settings_file}")
-        return []
+        # Pip distributions may omit the binary installation's editor metadata.
+        paths = []
+        kernel_python = isaacsim_dir / "kit" / "kernel" / "py"
+        if kernel_python.is_dir():
+            paths.append(kernel_python)
+        for name in ("exts", "extsDeprecated", "extscache", "kit/exts", "kit/extscore"):
+            directory = isaacsim_dir / name
+            if directory.is_dir():
+                paths.extend(path for path in sorted(directory.iterdir()) if path.is_dir())
+        return paths
 
     settings = settings_file.read_text(encoding="utf-8")
     match = re.search(r'"python\.analysis\.extraPaths"\s*:\s*\[(.*?)\]', settings, flags=re.DOTALL)
@@ -216,8 +230,59 @@ def write_pyright_config(project_dir: pathlib.Path, extra_paths: list[str]):
 
 
 def _is_isaacsim_dir(path: pathlib.Path) -> bool:
-    """Check whether a directory contains the settings used for extension discovery."""
-    return path.is_dir() and (path / ".vscode" / "settings.json").is_file()
+    """Check whether a directory contains SDK folders or editor metadata."""
+    return path.is_dir() and (
+        (path / ".vscode" / "settings.json").is_file()
+        or all((path / name).is_dir() for name in ("apps", "exts", "kit"))
+    )
+
+
+def _create_isaacsim_namespace(
+    project_dir: pathlib.Path, isaacsim_dir: pathlib.Path | None, extra_paths: list[str]
+) -> pathlib.Path | None:
+    """Merge split SDK package sources for static analysis without changing runtime imports."""
+    if isaacsim_dir is None:
+        return None
+    package_dirs = [isaacsim_dir, isaacsim_dir / "python_packages/isaacsim"]
+    bootstrap = next((path for path in package_dirs if (path / "__init__.py").is_file()), None)
+    if bootstrap is None:
+        return None
+    sources = [bootstrap]
+    for path in extra_paths:
+        package = (project_dir / path / "isaacsim").resolve()
+        if package.is_dir() and package not in sources:
+            sources.append(package)
+    if len(sources) == 1:
+        return None
+
+    import_root = project_dir / ".vscode/.python-libs"
+    package_root = import_root / "isaacsim"
+    if package_root.is_dir():
+        shutil.rmtree(package_root)
+    try:
+        _merge_python_sources(package_root, sources)
+    except OSError as error:
+        # Symlinks may require Developer Mode on Windows. Keep the original SDK paths usable.
+        shutil.rmtree(package_root, ignore_errors=True)
+        print(f"[WARN] Could not create editor-only Isaac Sim source links: {error}")
+        return None
+    return import_root
+
+
+def _merge_python_sources(destination: pathlib.Path, sources: list[pathlib.Path]) -> None:
+    """Link source trees, merging shared namespace directories and preferring the first file."""
+    destination.mkdir(parents=True, exist_ok=True)
+    children: dict[str, list[pathlib.Path]] = {}
+    for source in sources:
+        for child in sorted(source.iterdir()):
+            if child.name != "__pycache__":
+                children.setdefault(child.name, []).append(child)
+    for name, matches in children.items():
+        target = destination / name
+        if len(matches) > 1 and all(path.is_dir() for path in matches):
+            _merge_python_sources(target, matches)
+        else:
+            target.symlink_to(matches[0], target_is_directory=matches[0].is_dir())
 
 
 def _overwrite_default_python_interpreter(settings: str, isaacsim_dir: pathlib.Path | None) -> str:

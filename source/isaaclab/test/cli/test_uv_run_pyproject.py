@@ -173,6 +173,9 @@ def test_version_single_source_matches_literal_pins():
     newton_spec = next(requirement for requirement in overrides if requirement.startswith("newton[sim]"))
     assert "==" in newton_spec or " @ git+" in newton_spec
 
+    # Isaac Sim 6.1's supported NumPy also satisfies the Numba/cmeel upper bounds.
+    assert "numpy==2.3.1" in overrides
+
     # warp-lang is a core dependency whose table value may be an exact pin
     # ("1.2.3" -> ``==``) or a range (">=1.2.3" -> mirrored verbatim).
     warp_value = versions["warp"]

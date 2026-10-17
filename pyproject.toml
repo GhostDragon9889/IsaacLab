@@ -37,7 +37,7 @@ dependencies = [
     "isaaclab-tasks-experimental",
     "isaaclab-visualizers",
     # ----- generic -----
-    "numpy>=2",
+    "numpy>=2,<2.4",
     "torch>=2.11",
     "torchvision>=0.26.0",
     "torchaudio>=2.11",
@@ -115,7 +115,7 @@ dependencies = [
 
 tetrahedralization = ["pytetwild[all]>=0.3.0,<0.4"]
 
-video = ["moviepy>=1.0.3,<2.0.0.dev0"]
+video = ["moviepy>=1.0.3,<2.0.0.dev0", "imageio[ffmpeg]>=2.37.0"]
 
 importers = [
     "isaacsim-asset-isolated==6.1.0.0",
@@ -310,7 +310,7 @@ docstring-code-format = true
 
 [tool.pyright]
 
-include = ["source", "scripts"]
+include = ["source", "scripts", "src"]
 exclude = [
     "**/__pycache__",
     "**/_isaac_sim",
@@ -343,7 +343,7 @@ reportPrivateUsage = "warning"
 skip = '*.usd,*.usda,*.usdz,*.svg,*.png,_isaac_sim*,*.bib,*.css,*/_build'
 quiet-level = 0
 # the world list should always have words in lower case
-ignore-words-list = "aheared,collet,followng,haa,publically,rouines,slq,collapsable,buss,reacher,thirdparty,segway,wel"
+ignore-words-list = "aheared,collet,followng,haa,publically,rouines,slq,collapsable,buss,reacher,thirdparty,segway,wel,lod,sence"
 
 
 [tool.pytest.ini_options]
@@ -401,7 +401,8 @@ environments = [
 # ``importers`` extras pin older versions of these packages, so the overrides prevent downgrades.
 # Torch routes through [tool.uv.sources]. Values mirror [tool.isaaclab.versions] where applicable.
 override-dependencies = [
-    "numpy>=2",
+    # Match Isaac Sim's supported NumPy, also compatible with Numba and cmeel.
+    "numpy==2.3.1",
     "mujoco~=3.11.0",
     "mujoco-warp~=3.11.0",
     "newton[sim]==1.5.2",

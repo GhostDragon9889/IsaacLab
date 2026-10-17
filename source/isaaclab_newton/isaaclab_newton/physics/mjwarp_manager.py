@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 
+import mujoco
 import numpy as np
 import warp as wp
 from newton import Contacts, Model
@@ -40,7 +41,11 @@ class NewtonMJWarpManager(NewtonManager):
         kwargs = cls._filter_solver_kwargs(SolverMuJoCo, solver_cfg)
         # ls_parallel is deprecated in newton; forwarding it (even as False) emits a warning.
         kwargs.pop("ls_parallel", None)
-        return SolverMuJoCo(model, **kwargs)
+        solver = SolverMuJoCo(model, **kwargs)
+        if solver_cfg.use_mujoco_contacts and not solver_cfg.use_mujoco_cpu and not solver_cfg.use_native_ccd:
+            # The general convex path drops some symmetric box contacts in MJWarp 3.11.
+            solver.mjw_model.opt.disableflags |= int(mujoco.mjtDisableBit.mjDSBL_NATIVECCD)
+        return solver
 
     @classmethod
     def _build_solver(cls, model: Model, solver_cfg: MJWarpSolverCfg) -> None:

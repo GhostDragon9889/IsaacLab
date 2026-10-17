@@ -7,15 +7,57 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
+import importlib
+import sys
+from types import ModuleType, SimpleNamespace
 
 import gymnasium as gym
 import numpy as np
 import pytest
 
-from isaaclab.envs import ManagerBasedRLEnv
+from isaaclab.envs import DirectMARLEnv, DirectRLEnv, ManagerBasedEnv, ManagerBasedRLEnv
 
 pytestmark = pytest.mark.unit
+
+
+@pytest.mark.parametrize("env_class", [ManagerBasedEnv, DirectRLEnv, DirectMARLEnv])
+@pytest.mark.parametrize("stage_attached", [False, True])
+@pytest.mark.parametrize("requested_seed", [17, -1])
+def test_environment_seed_supports_unattached_stages(monkeypatch, env_class, stage_attached, requested_seed):
+    """Environment seeding must share the resolved seed without requiring a USD stage."""
+    settings = {}
+    graph_seed = []
+    resolved_seed = 123 if requested_seed == -1 else requested_seed
+
+    def set_global_seed(seed):
+        if seed < 0:
+            raise ValueError("Seed must be a non-negative integer")
+        settings["/omni/replicator/globalSeed"] = seed
+        if not stage_attached:
+            raise ValueError("Unable to retrieve replicator graph")
+        graph_seed.append(seed)
+
+    omni = ModuleType("omni")
+    omni.usd = ModuleType("omni.usd")
+    omni.usd.get_context = lambda: SimpleNamespace(get_stage=lambda: object() if stage_attached else None)
+    omni.replicator = ModuleType("omni.replicator")
+    omni.replicator.core = ModuleType("omni.replicator.core")
+    omni.replicator.core.set_global_seed = set_global_seed
+    for module in (omni, omni.usd, omni.replicator, omni.replicator.core):
+        monkeypatch.setitem(sys.modules, module.__name__, module)
+
+    module = importlib.import_module(env_class.__module__)
+    monkeypatch.setattr(module, "configure_seed", lambda seed: 123 if seed == -1 else seed)
+    monkeypatch.setattr(
+        module,
+        "get_settings_manager",
+        lambda: SimpleNamespace(set=settings.__setitem__),
+        raising=False,
+    )
+
+    assert env_class.seed(requested_seed) == resolved_seed
+    assert settings["/omni/replicator/globalSeed"] == resolved_seed
+    assert graph_seed == ([resolved_seed] if stage_attached else [])
 
 
 def _make_env_with_policy_obs_terms(

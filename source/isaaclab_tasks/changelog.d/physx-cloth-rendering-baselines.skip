@@ -1,0 +1,2 @@
+Added the missing Isaac RTX golden images for the existing PhysX cloth rendering tests.
+Added runtime-specific rendering references while preserving the shared references and comparison thresholds.

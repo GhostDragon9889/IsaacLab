@@ -1,0 +1,44 @@
+[
+  {
+    "directory": "profiles/rtx_4080_super_isaacsim_6_1",
+    "runtime": {
+      "gpu": "NVIDIA GeForce RTX 4080 SUPER",
+      "isaacsim": "6.1.0.0",
+      "newton": "1.5.2",
+      "warp": "1.16.0"
+    },
+    "captured_utc": "2026-10-15T04:17:07.652461+00:00",
+    "gpu_driver": "595.99.02",
+    "description": "Reviewed Cable geometry and MPM color references for this runtime; shared references remain unchanged.",
+    "files": [
+      {
+        "file": "franka_cable/newton-isaacsim_rtx_renderer-normals.png",
+        "sha256": "77c13a97c034d979164aa084442bab8bb4ef472cea827298ae6ed13f15fc5ebb"
+      },
+      {
+        "file": "franka_cable/newton-isaacsim_rtx_renderer-albedo.png",
+        "sha256": "6c718f72c5acb7f575d585f658ce245f62fc6e87950e5323db0f9665d374984c"
+      },
+      {
+        "file": "franka_cable/newton-isaacsim_rtx_renderer-simple_shading_constant_diffuse.png",
+        "sha256": "92ea9de0fffc0251cf35e8ff5bc95b16a21f6852fc11d243135ce3c25c701390"
+      },
+      {
+        "file": "franka_cable/newton-isaacsim_rtx_renderer-simple_shading_diffuse_mdl.png",
+        "sha256": "7799510aa7aa7c112dece21f4636f6a0cbdc9714283055e86695cbc7e56ad7de"
+      },
+      {
+        "file": "franka_cable/newton-isaacsim_rtx_renderer-simple_shading_full_mdl.png",
+        "sha256": "5ecf86a948a313c1a49a26cd292c4d9d769c18fd3536977deaf3729624a536a5"
+      },
+      {
+        "file": "mpm_particles/newton-isaacsim_rtx_renderer-rgb.png",
+        "sha256": "d8347a22b08cd441871bf311331f8cf5927657ff2026f551701ff24326fb21c0"
+      },
+      {
+        "file": "mpm_particles/newton-isaacsim_rtx_renderer-rgba.png",
+        "sha256": "f2a3b4562a5c698a715bfd51743000bdb9e9821ec36c26ddffe5358a6966c68f"
+      }
+    ]
+  }
+]

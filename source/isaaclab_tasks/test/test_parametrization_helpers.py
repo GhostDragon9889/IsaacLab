@@ -5,11 +5,14 @@
 
 """Tests for rendering correctness parameter helpers."""
 
+import json
 from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
 import rendering_test_utils
+import torch
+from PIL import Image
 from rendering_test_utils import (
     KITLESS_PHYSICS_RENDERER_AOV_COMBINATIONS,
     attach_comparison_properties,
@@ -116,6 +119,44 @@ def test_ovrtx_image_difference_threshold_is_capped(
 ) -> None:
     """OVRTX should use a tighter cap without loosening stricter environment thresholds."""
     assert rendering_test_utils._max_different_pixels_percentage(env_name, renderer, data_type) == expected
+
+
+@pytest.mark.parametrize("runtime_matches,profile_image_exists", [(True, True), (False, True), (True, False)])
+def test_camera_validation_uses_only_matching_existing_runtime_baselines(
+    monkeypatch, tmp_path: Path, runtime_matches: bool, profile_image_exists: bool
+) -> None:
+    """Use a reviewed runtime image only on its matching runtime; otherwise keep the shared image."""
+    runtime = {"gpu": "test GPU", "isaacsim": "6.1", "newton": "1.5.2", "warp": "1.16"}
+    profiles = [{"directory": "profiles/test", "runtime": runtime}]
+    (tmp_path / "profiles.json").write_text(json.dumps(profiles), encoding="utf-8")
+    filename = "newton-isaacsim_rtx_renderer-rgb.png"
+    shared = tmp_path / "scene" / filename
+    profiled = tmp_path / "profiles/test/scene" / filename
+    shared.parent.mkdir(parents=True)
+    profiled.parent.mkdir(parents=True)
+    use_profile = runtime_matches and profile_image_exists
+    Image.new("RGB", (4, 4), "red" if use_profile else "lime").save(shared)
+    if profile_image_exists:
+        Image.new("RGB", (4, 4), "lime" if use_profile else "red").save(profiled)
+    actual_runtime = runtime if runtime_matches else runtime | {"gpu": "another GPU"}
+    monkeypatch.setattr(rendering_test_utils, "_GOLDEN_IMAGES_DIRECTORY", str(tmp_path))
+    monkeypatch.setattr(
+        rendering_test_utils, "_rendering_runtime_signature", lambda device: actual_runtime, raising=False
+    )
+    scores = []
+
+    rendering_test_utils.validate_camera_outputs(
+        "scene",
+        "newton",
+        "isaacsim_rtx_renderer",
+        {"rgb": torch.tensor([[[[0, 255, 0]] * 4] * 4], dtype=torch.uint8)},
+        0.0,
+        scores,
+    )
+
+    assert scores[0]["passed"]
+    if not profile_image_exists:
+        assert not profiled.exists()
 
 
 @pytest.mark.parametrize(

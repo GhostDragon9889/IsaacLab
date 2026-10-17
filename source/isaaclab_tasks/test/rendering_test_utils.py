@@ -5,12 +5,14 @@
 
 """Shared helpers for rendering correctness tests."""
 
+import json
 import logging
 import os
 import re
 import tempfile
 from datetime import datetime
 from html import escape
+from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -1247,6 +1249,41 @@ def _compare_images(
     return True, None, diff_pct, ssim_score
 
 
+def _rendering_runtime_signature(device: torch.device) -> dict[str, str] | None:
+    """Identify a CUDA rendering runtime without initializing CUDA for CPU-only tests."""
+    if device.type != "cuda":
+        return None
+    try:
+        return {
+            "gpu": torch.cuda.get_device_name(device),
+            "isaacsim": version("isaacsim"),
+            "newton": version("newton"),
+            "warp": version("warp-lang"),
+        }
+    except PackageNotFoundError:
+        return None
+
+
+def _golden_image_path(test_name: str, filename: str, device: torch.device) -> str:
+    """Select an existing runtime-specific reference, falling back to the shared reference."""
+    shared_path = os.path.join(_GOLDEN_IMAGES_DIRECTORY, test_name, filename)
+    manifest_path = os.path.join(_GOLDEN_IMAGES_DIRECTORY, "profiles.json")
+    if not os.path.isfile(manifest_path):
+        return shared_path
+    runtime = _rendering_runtime_signature(device)
+    if runtime is None:
+        return shared_path
+    with open(manifest_path, encoding="utf-8") as file:
+        profiles = json.load(file)
+    for profile in profiles:
+        if profile["runtime"] != runtime:
+            continue
+        path = os.path.join(_GOLDEN_IMAGES_DIRECTORY, profile["directory"], test_name, filename)
+        if os.path.isfile(path):
+            return path
+    return shared_path
+
+
 def validate_camera_outputs(
     test_name: str,
     physics_backend: str,
@@ -1287,7 +1324,7 @@ def validate_camera_outputs(
         ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to("cpu", torch.uint8).numpy()
         result_image = Image.fromarray(ndarr)
 
-        golden_path = os.path.join(golden_image_dir, f"{physics_backend}-{renderer}-{data_type}.png")
+        golden_path = _golden_image_path(test_name, f"{physics_backend}-{renderer}-{data_type}.png", tensor.device)
         if not os.path.exists(golden_path):
             failed_data_types[data_type] = f"Golden image not found at {golden_path}."
             result_image.save(golden_path)

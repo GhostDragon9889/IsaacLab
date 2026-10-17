@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import ast
+import contextlib
 import importlib.util
 import os
 import re
@@ -263,7 +264,6 @@ OVERRIDES = {
         skip_reason="requires a user-supplied TorchScript checkpoint"
     ),
     "scripts/tutorials/03_envs/run_cartpole_rl_env.py": ScriptOverride(readiness_pattern=r"Resetting environment"),
-    "scripts/tutorials/04_sensors/add_sensors_on_robot.py": ScriptOverride(args=("--enable_cameras",)),
     "scripts/tutorials/04_sensors/run_ray_caster.py": ScriptOverride(visualizers=("none", "kit")),
     "scripts/tutorials/04_sensors/run_ray_caster_camera.py": ScriptOverride(visualizers=("none", "kit")),
     "scripts/tutorials/04_sensors/run_usd_camera.py": ScriptOverride(visualizers=("none", "kit")),
@@ -443,8 +443,9 @@ def run_until_ready(
 
     def record_output(chunk: bytes) -> None:
         """Record bounded output while retaining fatal-pattern state."""
+        overlap = max(len(pattern) for pattern in _FATAL_PATTERNS) - 1
+        decoded_output = (output[-overlap:] + chunk).decode(errors="replace")
         output.extend(chunk)
-        decoded_output = output.decode(errors="replace")
         if monitor_fatal_patterns:
             fatal_patterns.update(pattern for pattern in _FATAL_PATTERNS if pattern in decoded_output)
         if len(output) > MAX_OUTPUT_BYTES:
@@ -481,9 +482,10 @@ def run_until_ready(
                 screenshot_captured = True
             if ready_at is not None and now - ready_at >= soak_time:
                 stopped_after_soak = True
-                # Classify every byte already waiting in the pipe before crossing the teardown boundary.
-                while read_available_output(timeout=0.0):
-                    pass
+                # Drain the buffered pipe, but bound reads if the producer keeps replenishing it.
+                for _ in range(64):
+                    if not read_available_output(timeout=0.0):
+                        break
                 # Preserve shutdown logs without treating errors caused by intentional teardown as runtime failures.
                 monitor_fatal_patterns = False
                 _terminate_process_group(process)
@@ -501,7 +503,8 @@ def run_until_ready(
             remainder, _ = process.communicate(timeout=5)
             record_output(remainder or b"")
         except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(process.pid, signal.SIGKILL)
             remainder, _ = process.communicate(timeout=5)
             record_output(remainder or b"")
 
@@ -570,11 +573,13 @@ def _terminate_process_group(process: subprocess.Popen) -> None:
     """Terminate a script and any simulator children it spawned."""
     if process.poll() is not None:
         return
-    os.killpg(process.pid, signal.SIGTERM)
+    with contextlib.suppress(ProcessLookupError):
+        os.killpg(process.pid, signal.SIGTERM)
     try:
         process.wait(timeout=10)
     except subprocess.TimeoutExpired:
-        os.killpg(process.pid, signal.SIGKILL)
+        with contextlib.suppress(ProcessLookupError):
+            os.killpg(process.pid, signal.SIGKILL)
         process.wait(timeout=5)
 
 

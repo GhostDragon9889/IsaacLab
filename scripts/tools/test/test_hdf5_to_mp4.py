@@ -8,8 +8,8 @@
 import os
 import tempfile
 
-import cv2
 import h5py
+import imageio.v2 as imageio
 import numpy as np
 import pytest
 
@@ -87,14 +87,10 @@ class TestHDF5ToMP4:
         assert os.path.exists(output_file)
         assert os.path.getsize(output_file) > 0
 
-        video = cv2.VideoCapture(output_file)
         decoded_frames = []
-        while True:
-            success, frame = video.read()
-            if not success:
-                break
-            decoded_frames.append(frame)
-        video.release()
+        with imageio.get_reader(output_file, format="FFMPEG") as video:
+            for frame in video:
+                decoded_frames.append(frame)
 
         assert len(decoded_frames) == 2
         decoded_frames = np.stack(decoded_frames)

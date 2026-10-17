@@ -11,6 +11,8 @@ that are visually augmented versions of the original demonstration videos (e.g.,
 color schemes, or visual effects). It creates a new HDF5 dataset that preserves all the original
 demonstration data (actions, robot state, etc.) but replaces the video frames with the augmented versions.
 
+Run with ``uv run --extra video python scripts/tools/mp4_to_hdf5.py ...`` to enable FFmpeg codecs.
+
 required arguments:
     --input_file         Path to the input HDF5 file containing original demonstrations.
     --output_file        Path to save the new HDF5 file with augmented videos.
@@ -23,6 +25,7 @@ import os
 
 import cv2
 import h5py
+import imageio.v2 as imageio
 import numpy as np
 
 
@@ -64,28 +67,15 @@ def get_frames_from_mp4(video_path, target_height=None, target_width=None):
     Returns:
         np.ndarray: Array of frames from the video in RGB format.
     """
-    # Open the video file
-    video = cv2.VideoCapture(video_path)
-
-    # Get video properties
-    frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-
-    # Read all frames into a numpy array
     frames = []
-    for _ in range(frame_count):
-        ret, frame = video.read()
-        if not ret:
-            break
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        if target_height is not None and target_width is not None:
-            frame = cv2.resize(frame, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
-        frames.append(frame)
+    with imageio.get_reader(video_path, format="FFMPEG") as video:
+        for frame in video:
+            if target_height is not None and target_width is not None:
+                frame = cv2.resize(frame, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
+            frames.append(frame)
 
     # Convert to numpy array
     frames = np.array(frames).astype(np.uint8)
-
-    # Release the video object
-    video.release()
 
     return frames
 

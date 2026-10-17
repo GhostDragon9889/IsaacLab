@@ -184,17 +184,21 @@ def test_kit_experience_path_resolves_to_the_shipped_experience():
     assert assets_utils._parse_kit_asset_root()
 
 
-def test_kit_experience_asset_roots_use_production():
-    """Test every shipped experience uses the canonical production asset root."""
+def test_kit_experience_asset_roots_are_consistent():
+    """Test every experience uses the same production or installed local asset root."""
     kit_directory = Path(assets_utils._KIT_EXPERIENCE_PATH).parent
-    production_root = assets_utils._parse_kit_asset_root()
+    asset_root = assets_utils._parse_kit_asset_root()
 
-    assert "omniverse-content-production" in production_root
+    if "://" in asset_root:
+        assert "omniverse-content-production" in asset_root
+    else:
+        assert (Path(asset_root) / "Isaac").is_dir()
+        assert (Path(asset_root) / "NVIDIA").is_dir()
     for kit_path in kit_directory.glob("*.kit"):
         kit_config = kit_path.read_text(encoding="utf-8")
         assert "omniverse-content-staging" not in kit_config
         for setting in ("default", "cloud", "nvidia"):
-            assert f'persistent.isaac.asset_root.{setting} = "{production_root}"' in kit_config
+            assert f'persistent.isaac.asset_root.{setting} = "{asset_root}"' in kit_config
 
 
 def test_kit_asset_root_prefers_default_setting(tmp_path, monkeypatch):
@@ -263,11 +267,12 @@ def test_nucleus_connection():
 
 
 def test_check_file_path_nucleus():
-    """Test checking a file path on the Nucleus server."""
+    """Test checking a file under the configured remote or local asset root."""
     # robot file path
     usd_path = f"{assets_utils.ISAACLAB_NUCLEUS_DIR}/Robots/FrankaEmika/Legacy/panda_instanceable.usd"
     # check file path
-    assert assets_utils.check_file_path(usd_path) == 2
+    expected_location = 2 if "://" in usd_path else 1
+    assert assets_utils.check_file_path(usd_path) == expected_location
 
 
 def test_check_file_path_invalid():

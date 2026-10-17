@@ -200,9 +200,8 @@ enabled=true # Enable this for DLSS
 "isaacsim.core.version" = {}
 
 # Asset path
-# set the S3 directory manually to the latest published S3
-# note: this is done to ensure prior versions of Isaac Sim still use the latest assets
+# Use the locally installed Isaac Sim 6.1 asset pack.
 [settings]
-persistent.isaac.asset_root.default = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.1"
-persistent.isaac.asset_root.cloud = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.1"
-persistent.isaac.asset_root.nvidia = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.1"
+persistent.isaac.asset_root.default = "/project/isaacsim/isaacsim_assets/Assets/Isaac/6.1"
+persistent.isaac.asset_root.cloud = "/project/isaacsim/isaacsim_assets/Assets/Isaac/6.1"
+persistent.isaac.asset_root.nvidia = "/project/isaacsim/isaacsim_assets/Assets/Isaac/6.1"

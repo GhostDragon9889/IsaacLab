@@ -3,6 +3,13 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+"""Test device construction after initializing the required Kit modules."""
+
+from isaaclab.app import AppLauncher
+
+app_launcher = AppLauncher(headless=True)
+simulation_app = app_launcher.app
+
 import importlib
 import json
 

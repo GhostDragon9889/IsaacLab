@@ -48,7 +48,10 @@ def _articulation_class():
             ),
             category=DeprecationWarning,
         )
-        with patch.dict(sys.modules, {"isaaclab_physx.cloner": cloner, "isaaclab_physx.physics": physics}):
+        # Restore only these stubs; preserve Torch/LEAPP modules loaded by the import.
+        with pytest.MonkeyPatch.context() as modules:
+            modules.setitem(sys.modules, "isaaclab_physx.cloner", cloner)
+            modules.setitem(sys.modules, "isaaclab_physx.physics", physics)
             from isaaclab_physx.assets.articulation.articulation import Articulation
 
     return Articulation

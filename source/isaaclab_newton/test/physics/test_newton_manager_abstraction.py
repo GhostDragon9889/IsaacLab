@@ -70,6 +70,36 @@ from isaaclab.sim import SimulationCfg, build_simulation_context
 # Lightweight (no sim) parametrisation
 # ---------------------------------------------------------------------------
 
+
+def test_mjwarp_box_contacts_survive_symmetric_offsets():
+    """Default GPU contacts keep boxes above a finite floor, including symmetric placements."""
+    builder = ModelBuilder()
+    floor_half_height = 0.05
+    box_half_extent = 0.05
+    builder.add_shape_box(
+        -1,
+        xform=wp.transform(wp.vec3(0.0, 0.0, -floor_half_height), wp.quat_identity()),
+        hx=50.0,
+        hy=50.0,
+        hz=floor_half_height,
+    )
+    for index in range(64):
+        builder.begin_world()
+        body = builder.add_body(xform=wp.transform(wp.vec3(index % 8, index // 8, 1.0), wp.quat_identity()))
+        builder.add_shape_box(body, hx=box_half_extent, hy=box_half_extent, hz=box_half_extent)
+        builder.end_world()
+    model = builder.finalize(device="cuda:0")
+    solver = NewtonMJWarpManager._create_solver(model, MJWarpSolverCfg())
+    state_0, state_1 = model.state(), model.state()
+    control = model.control()
+    for _ in range(200):
+        state_0.clear_forces()
+        solver.step(state_0, state_1, control, None, 1.0 / 120.0)
+        state_0, state_1 = state_1, state_0
+    heights = state_0.body_q.numpy()[:, 2]
+    np.testing.assert_allclose(heights, box_half_extent, atol=0.005)
+
+
 # (solver_cfg_factory, expected_manager, expected_solver_cls,
 #  expected_use_single_state, expected_needs_collision_pipeline)
 SOLVER_MATRIX = [
@@ -1167,6 +1197,46 @@ def test_cuda_graph_capture_uses_simulation_device(monkeypatch):
 
     assert captured_devices == ["cuda:1"]
     assert NewtonManager._graph is captured_graph
+
+
+def test_deferred_graph_initializes_reset_storage_before_forward(monkeypatch):
+    """An eager reset can read storage initialized by the first captured MPM step."""
+    storage = {"captured": False, "initialized": False}
+    graph = object()
+
+    def capture(cls, device):
+        storage["captured"] = True
+        return graph
+
+    def forward(cls):
+        assert not storage["captured"] or storage["initialized"], "reset read uninitialized captured storage"
+
+    monkeypatch.setattr(PhysicsManager, "_sim", SimpleNamespace(is_playing=lambda: True))
+    monkeypatch.setattr(PhysicsManager, "_cfg", SimpleNamespace(use_cuda_graph=True))
+    monkeypatch.setattr(PhysicsManager, "_device", "cuda:0")
+    monkeypatch.setattr(PhysicsManager, "_sim_time", 0.0)
+    monkeypatch.setattr(NewtonManager, "_graph_capture_pending", True)
+    monkeypatch.setattr(NewtonManager, "_usdrt_stage", object())
+    monkeypatch.setattr(NewtonManager, "_graph", None)
+    monkeypatch.setattr(NewtonManager, "_solver", None)
+    monkeypatch.setattr(NewtonManager, "_model_changes", set())
+    monkeypatch.setattr(NewtonManager, "_solver_dt", 0.01)
+    monkeypatch.setattr(NewtonManager, "_num_substeps", 1)
+    monkeypatch.setattr(NewtonManager, "_decimation", 1)
+    monkeypatch.setattr(NewtonManager, "_reset_solver_internals_delegate", lambda mask: None)
+    monkeypatch.setattr(NewtonManager, "_requires_initial_reset_before_graph_capture", classmethod(lambda cls: True))
+    monkeypatch.setattr(NewtonManager, "_capture_relaxed_graph", classmethod(capture))
+    monkeypatch.setattr(NewtonManager, "forward", classmethod(forward))
+    monkeypatch.setattr(NewtonManager, "_is_all_graphable", classmethod(lambda cls: True))
+    monkeypatch.setattr(NewtonManager, "_mark_state_dirty", classmethod(lambda cls: None))
+    monkeypatch.setattr(NewtonManager, "_mark_sensor_state_dirty", classmethod(lambda cls: None))
+    monkeypatch.setattr(NewtonManager, "_log_solver_debug", classmethod(lambda cls: None))
+    monkeypatch.setattr(wp, "capture_launch", lambda graph: storage.update(initialized=True))
+
+    NewtonManager.step()
+
+    assert storage["initialized"]
+    assert PhysicsManager._sim_time == pytest.approx(0.01)
 
 
 # ---------------------------------------------------------------------------

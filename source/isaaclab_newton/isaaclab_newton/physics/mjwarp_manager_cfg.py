@@ -119,6 +119,14 @@ class MJWarpSolverCfg(NewtonSolverCfg):
         :class:`ValueError` because the two collision modes are mutually exclusive.
     """
 
+    use_native_ccd: bool = False
+    """Whether GPU box-box contacts use the general convex GJK/EPA algorithm.
+
+    Defaults to False to use MuJoCo Warp's dedicated box-box algorithm, which avoids
+    dropped contacts at symmetric placements in MuJoCo Warp 3.11. This setting only
+    affects internal GPU contacts; CPU MuJoCo and Newton's collision pipeline are unchanged.
+    """
+
     tolerance: float = 1e-6
     """Solver convergence tolerance for the constraint residual.
 

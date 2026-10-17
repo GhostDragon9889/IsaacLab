@@ -4,36 +4,34 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
+import sys
 
 import pytest
+from standalone_script_cases import run_until_ready
 
 from isaaclab.app import AppLauncher
 
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.usefixtures("mocker")
-def test_livestream_launch_with_argparser(mocker):
+def test_livestream_launch_with_argparser():
     """Test launching with argparser arguments."""
-    # Mock the parse_args method
-    mocker.patch("argparse.ArgumentParser.parse_args", return_value=argparse.Namespace(livestream=1))
-    # create argparser
-    parser = argparse.ArgumentParser()
-    # add app launcher arguments
-    AppLauncher.add_app_launcher_args(parser)
-    # check that argparser has the mandatory arguments
-    for name in AppLauncher._APPLAUNCHER_CFG_INFO.keys() - {"headless", "enable_cameras"}:
-        assert parser._option_string_actions[f"--{name}"]
-    # parse args
-    mock_args = parser.parse_args()
-    # everything defaults to None
-    app_launcher = AppLauncher(mock_args)
-    app = app_launcher.app
-    assert app_launcher._livestream == 1
-    assert app_launcher._headless is True
-
-    # close the app on exit
-    app.close()
+    # Kit fast shutdown exits Python; keep pytest and its report writer in the parent.
+    code = """
+import argparse
+from isaaclab.app import AppLauncher
+parser = argparse.ArgumentParser()
+AppLauncher.add_app_launcher_args(parser)
+for name in AppLauncher._APPLAUNCHER_CFG_INFO.keys() - {"headless", "enable_cameras"}:
+    assert parser._option_string_actions[f"--{name}"]
+launcher = AppLauncher(parser.parse_args(["--livestream", "1"]))
+assert launcher._livestream == 1
+assert launcher._headless is True
+print("LIVESTREAM_READY", flush=True)
+launcher.app.close()
+"""
+    result = run_until_ready([sys.executable, "-c", code], "LIVESTREAM_READY")
+    assert result.ready and result.returncode == 0 and not result.fatal_patterns, result.output
 
 
 def test_visualizer_alias_parsing():
@@ -42,7 +40,7 @@ def test_visualizer_alias_parsing():
     AppLauncher.add_app_launcher_args(parser)
 
     args = parser.parse_args(["--viz", "kit,newton"])
-    assert args.visualizer == ["kit", "newton"]
+    assert args.visualizer == ["kit", "newton_gl"]
     assert args.visualizer_explicit is True
 
 

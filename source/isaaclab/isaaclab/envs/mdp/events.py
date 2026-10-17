@@ -19,11 +19,13 @@ import math
 import re
 from typing import TYPE_CHECKING, Literal
 
+import numpy as np
 import torch
 import warp as wp
 
 import isaaclab.sim as sim_utils
 import isaaclab.utils.math as math_utils
+from isaaclab.app.settings_manager import get_settings_manager
 from isaaclab.managers import EventTermCfg, ManagerTermBase, SceneEntityCfg
 from isaaclab.utils.version import compare_versions
 
@@ -2919,7 +2921,10 @@ class randomize_visual_color(ManagerTermBase):
             prims_group = rep.functional.get.prims(path_pattern=mesh_prim_path, stage=stage)
 
             num_prims = len(prims_group)
-            self.color_rng = rep.rng.ReplicatorRNG()
+            # Functional randomization needs no OmniGraph RNG or stage-closing callbacks.
+            self._color_seed = get_settings_manager().get("/omni/replicator/globalSeed")
+            seed = self._color_seed if self._color_seed is not None else np.random.randint(0x7FFFFFFF)
+            self.color_rng = np.random.default_rng(seed)
 
             # Create the material first and bind it to the prims
             for i, prim in enumerate(prims_group):
@@ -2974,7 +2979,11 @@ class randomize_visual_color(ManagerTermBase):
                 colors = list(colors)
 
             num_prims = len(self.material_prims)
-            random_colors = self.color_rng.generator.uniform(colors[0], colors[1], size=(num_prims, 3))
+            seed = get_settings_manager().get("/omni/replicator/globalSeed")
+            if seed != self._color_seed:
+                self._color_seed = seed
+                self.color_rng = np.random.default_rng(seed)
+            random_colors = self.color_rng.uniform(colors[0], colors[1], size=(num_prims, 3))
 
             rep.functional.modify.attribute(self.material_prims, "diffuse_color_constant", random_colors)
 

@@ -10,6 +10,8 @@ This script converts camera frames stored in HDF5 demonstration files to MP4 vid
 It supports multiple camera modalities including RGB, segmentation, and normal maps.
 The output videos are saved in the specified directory with appropriate naming.
 
+Run with ``uv run --extra video python scripts/tools/hdf5_to_mp4.py ...`` to enable FFmpeg codecs.
+
 required arguments:
     --input_file         Path to the input HDF5 file.
     --output_dir         Directory to save the output MP4 files.
@@ -29,6 +31,7 @@ import os
 
 import cv2
 import h5py
+import imageio.v2 as imageio
 import numpy as np
 
 # Constants
@@ -145,43 +148,38 @@ def write_demo_to_mp4(
 
         # Setup video writer
         output_path = os.path.join(output_dir, f"demo_{demo_id}_{input_key}.mp4")
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        if "depth" in input_key:
-            video = cv2.VideoWriter(output_path, fourcc, framerate, (video_width, video_height), isColor=False)
-        else:
-            video = cv2.VideoWriter(output_path, fourcc, framerate, (video_width, video_height))
+        with imageio.get_writer(
+            output_path, format="FFMPEG", fps=framerate, codec="mpeg4", macro_block_size=1
+        ) as video:
+            # Process and write frames
+            for ix, frame in enumerate(frames):
+                # Convert normal maps to uint8 if needed
+                if "normals" in input_key:
+                    frame = (frame * 255.0).astype(np.uint8)
 
-        # Process and write frames
-        for ix, frame in enumerate(frames):
-            # Convert normal maps to uint8 if needed
-            if "normals" in input_key:
-                frame = (frame * 255.0).astype(np.uint8)
+                # Process shaded segmentation frames
+                elif "shaded_segmentation" in input_key:
+                    segmentation_frame = _convert_frame_to_uint8(frame)
+                    seg = segmentation_frame[..., :-1]
+                    normals_key = input_key.replace("shaded_segmentation", "normals")
+                    normals = f[f"data/demo_{demo_id}/obs/{normals_key}"][ix]
+                    shade = 0.5 + (normals * LIGHT_SOURCE[None, None, :]).sum(axis=-1) * 0.5
+                    shaded_seg = np.clip(shade[..., None] * seg, 0, 255).astype(np.uint8)
+                    frame = np.concatenate((shaded_seg, segmentation_frame[..., -1:]), axis=-1)
 
-            # Process shaded segmentation frames
-            elif "shaded_segmentation" in input_key:
-                segmentation_frame = _convert_frame_to_uint8(frame)
-                seg = segmentation_frame[..., :-1]
-                normals_key = input_key.replace("shaded_segmentation", "normals")
-                normals = f[f"data/demo_{demo_id}/obs/{normals_key}"][ix]
-                shade = 0.5 + (normals * LIGHT_SOURCE[None, None, :]).sum(axis=-1) * 0.5
-                shaded_seg = np.clip(shade[..., None] * seg, 0, 255).astype(np.uint8)
-                frame = np.concatenate((shaded_seg, segmentation_frame[..., -1:]), axis=-1)
+                # MP4 encoders accept RGB without the segmentation alpha channel.
+                if "depth" not in input_key:
+                    frame = _convert_frame_to_uint8(frame)
+                    frame = frame[..., :3]
+                else:
+                    frame = (frame[..., 0] - MIN_DEPTH) / (MAX_DEPTH - MIN_DEPTH)
+                    frame = np.where(frame < 0.01, 1.0, frame)
+                    frame = 1.0 - frame
+                    frame = (frame * 255.0).astype(np.uint8)
 
-            # Convert RGB to BGR
-            if "depth" not in input_key:
-                frame = _convert_frame_to_uint8(frame)
-                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            else:
-                frame = (frame[..., 0] - MIN_DEPTH) / (MAX_DEPTH - MIN_DEPTH)
-                frame = np.where(frame < 0.01, 1.0, frame)
-                frame = 1.0 - frame
-                frame = (frame * 255.0).astype(np.uint8)
-
-            # Resize to video resolution
-            frame = cv2.resize(frame, (video_width, video_height), interpolation=cv2.INTER_CUBIC)
-            video.write(frame)
-
-        video.release()
+                # Resize to video resolution
+                frame = cv2.resize(frame, (video_width, video_height), interpolation=cv2.INTER_CUBIC)
+                video.append_data(frame)
 
 
 def get_num_demos(hdf5_file):

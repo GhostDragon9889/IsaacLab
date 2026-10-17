@@ -10,6 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 from isaaclab_newton.physics import NewtonCfg, VBDSolverCfg
+from standalone_script_cases import run_until_ready
 
 import isaaclab.app as app_module
 import isaaclab.app.app_launcher as app_launcher_module
@@ -28,17 +29,18 @@ def test_make_physics_cfg_builds_core_vbd():
     assert isinstance(physics_cfg.solver_cfg, VBDSolverCfg)
 
 
-@pytest.mark.usefixtures("mocker")
-def test_livestream_launch_with_kwargs(mocker):
+def test_livestream_launch_with_kwargs():
     """Test launching with keyword arguments."""
-    # everything defaults to None
-    app_launcher = AppLauncher(headless=True, livestream=1)
-    app = app_launcher.app
-    assert app_launcher._livestream == 1
-    assert app_launcher._headless is True
-
-    # close the app on exit
-    app.close()
+    code = """
+from isaaclab.app import AppLauncher
+launcher = AppLauncher(headless=True, livestream=1)
+assert launcher._livestream == 1
+assert launcher._headless is True
+print("LIVESTREAM_READY", flush=True)
+launcher.app.close()
+"""
+    result = run_until_ready([sys.executable, "-c", code], "LIVESTREAM_READY")
+    assert result.ready and result.returncode == 0 and not result.fatal_patterns, result.output
 
 
 def test_livestream_injects_kit_visualizer_when_missing():

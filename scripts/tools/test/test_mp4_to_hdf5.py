@@ -8,8 +8,8 @@
 import os
 import tempfile
 
-import cv2
 import h5py
+import imageio.v2 as imageio
 import numpy as np
 import pytest
 
@@ -63,14 +63,13 @@ def temp_videos_dir():
         video_paths.append(video_path)
 
         # Create a test video
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        video = cv2.VideoWriter(video_path, fourcc, 30, (1280, 704))
+        video = imageio.get_writer(video_path, format="FFMPEG", fps=30, codec="mpeg4", macro_block_size=1)
 
         # Write some random frames
         for _ in range(10):
             frame = np.random.randint(0, 255, (704, 1280, 3), dtype=np.uint8)
-            video.write(frame)
-        video.release()
+            video.append_data(frame)
+        video.close()
 
     yield temp_dir, video_paths
 

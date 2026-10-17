@@ -3,6 +3,13 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+"""Test OpenXR device construction after initializing the required Kit modules."""
+
+from isaaclab.app import AppLauncher
+
+app_launcher = AppLauncher(headless=True)
+simulation_app = app_launcher.app
+
 import importlib
 from typing import cast
 
@@ -19,6 +26,8 @@ from isaaclab.devices import (
     Se3Keyboard,
     Se3KeyboardCfg,
 )
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture
