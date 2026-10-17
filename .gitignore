@@ -17,6 +17,9 @@
 **/*.usdc
 **/*.usdz
 
+# Keep the navigation setup layers alongside their Python configuration scripts.
+!src/navigation_data_synthesis/config/**/*.usda
+
 # Python
 .DS_Store
 **/*.egg-info/

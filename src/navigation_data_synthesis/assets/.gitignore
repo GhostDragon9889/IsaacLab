@@ -1,0 +1,5 @@
+# Keep scene datasets local; retain their documentation in the repository.
+*
+!*/
+!.gitignore
+!*.md

@@ -1,0 +1,116 @@
+# Copyright (c) 2022-2026, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+isaacsim.replicator.agent:
+  version: 1.7.0
+  seed: 42
+  simulation_duration: 60.0
+
+  environment:
+    base_stage_asset_path: "/project/EXP/IsaacLab/src/navigation_data_synthesis/assets/Third_Floor_Simulation.usd"
+    prop_asset_paths:
+      # 身体碰撞体、机器人堵路等待和显示网格优化位于此 USD 设置层。
+      - "character_body_colliders.usda"
+
+  character:
+    root_prim_path: "/World/Characters"
+    motion_library_path: "/project/EXP/IsaacLab/src/navigation_data_synthesis/config/third_floor/standing_motion_library.usda"
+
+    groups:
+      walker_01:
+        num: 1
+        asset_path: "Isaac/People/Characters/"
+        spawn_positions:
+          # Keep the standing body out of the narrow east-west passage.
+          - [-0.45, -0.85, 0.0]
+        spawn_orientations:
+          - 180.0
+
+        # 默认行为：持续原地待机。
+        routines:
+          - stop:
+              time_range: [60.0, 60.0]
+
+      walker_02:
+        num: 1
+        asset_path: "Isaac/People/Characters/"
+        spawn_positions:
+          # Wait inside the empty cubicle so walker_03 can clear the main passage.
+          - [1.93617, -0.45, 0.0]
+        spawn_orientations:
+          - -90.0
+
+        # 新增：触发序列结束后，返回停止行为，而不是默认游走。
+        routines:
+          - stop:
+              time_range: [60.0, 60.0]
+
+        triggers:
+          - time_trigger:
+              # Let walker_03 clear the narrow passage before walker_02 stops there.
+              time: 10.0
+              priority: 10
+              behavior:
+                - patrol:
+                    speed_range: [0.5, 1.0]
+                    repeat: 1
+                    path_points:
+                      # Keep the enlarged capsule below the urinal dividers.
+                      - [1.65, 0.40, 0.0]
+                      - [-1.50, 0.40, 0.0]
+                      - [-1.50795, 0.94228, 0.0]
+                - stop:
+                    time_range: [60.0, 60.0]
+      walker_03:
+        num: 1
+        asset_path: "Isaac/People/Characters/"
+        spawn_positions:
+          # Keep the enlarged body capsule clear of the right wall at spawn.
+          - [2.90, -0.45281, 0.0]
+        spawn_orientations:
+          - -180.0
+
+        # 新增：触发序列结束后，返回停止行为，而不是默认游走。
+        routines:
+          - stop:
+              time_range: [60.0, 60.0]
+
+        triggers:
+          - time_trigger:
+              # IRA 1.7.9 按帧号精确触发；第 0 帧早于角色初始化，延后到 1 秒。
+              time: 1.0
+              priority: 10
+              behavior:
+                - patrol:
+                    speed_range: [0.5, 1.0]
+                    repeat: 1
+                    path_points:
+                      # Finish the turn beyond the partition before heading west.
+                      - [2.85, 0.55, 0.0]
+                      - [2.60, 0.40, 0.0]
+                      - [1.65, 0.40, 0.0]
+                      - [-1.50, 0.40, 0.0]
+                      - [-1.60, -0.90, 0.0]
+                      - [-2.35, -1.00, 0.0]
+                      - [-2.98846, -0.94616, 0.0]
+                - stop:
+                    time_range: [60.0, 60.0]
+        #     walker_02:
+        # num: 1
+        # asset_path: "Isaac/People/Characters/"
+
+        # spawn_positions:
+        #   - [0.70426, 0.41705, 0.0]
+
+        # spawn_orientations:
+        #   - -90.0
+
+        # # 临时诊断：不经过 time_trigger，直接执行行走。
+        # routines:
+        #   - patrol:
+        #       speed_range: [0.5, 1.0]
+        #       repeat: 1
+        #       path_points:
+        #         - [-1.50795, 0.94228, 0.0]
