@@ -16,8 +16,20 @@
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/node_modules/**": true,
+        "**/env_isaaclab/**": true,
+        "**/.venv/**": true,
+        "**/logs/**": true,
+        "**/outputs/**": true,
         "**/_isaac_sim/**": true,
-        "**/_compiler/**": true
+        "**/_compiler/**": true,
+        "**/.vscode/.python-libs/**": true
+    },
+    "search.exclude": {
+        "**/env_isaaclab/**": true,
+        "**/.venv/**": true,
+        "**/logs/**": true,
+        "**/outputs/**": true,
+        "**/.vscode/.python-libs/**": true
     },
     // Configuration for spelling checker
     "spellright.language": [
@@ -32,51 +44,77 @@
         "python",
         "restructuredtext"
     ],
-    "cSpell.words": [
-        "literalinclude",
-        "linenos",
-        "instanceable",
-        "isaacSim",
-        "jacobians",
-        "pointcloud",
-        "ridgeback",
-        "rllib",
-        "robomimic",
-        "teleoperation",
-        "xform",
-        "numpy",
-        "flatcache",
-        "physx",
-        "dpad",
-        "gamepad",
-        "linspace",
-        "upsampled",
-        "downsampled",
-        "arange",
-        "discretization",
-        "trimesh",
-        "uninstanceable",
-        "coeff",
-        "prestartup"
-    ],
     // This enables python language server. Seems to work slightly better than jedi:
     "python.languageServer": "Pylance",
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.indexing": true,
+    "python.analysis.userFileIndexingLimit": 4000,
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.envFile": "${workspaceFolder}/.vscode/python.env",
+    "python.terminal.activateEnvironment": true,
+    // Keep discovery limited to checks that do not launch Kit. Use tasks for simulator tests.
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.cwd": "${workspaceFolder}",
+    "python.testing.pytestArgs": [
+        "source/isaaclab/test/utils/test_editor.py",
+        "source/isaaclab/test/cli/test_uv_run_pyproject.py"
+    ],
     // Use ruff as a formatter and linter
     "ruff.configuration": "${workspaceFolder}/pyproject.toml",
+    "ruff.importStrategy": "useBundled",
     // Use docstring generator
     "autoDocstring.docstringFormat": "google",
     "autoDocstring.guessTypes": true,
     // Python environment path
     // note: the default interpreter is overridden when user selects a workspace interpreter
     //     in the status bar. For example, the virtual environment python interpreter
-    "python.defaultInterpreterPath": "${workspaceFolder}/_isaac_sim/python.sh",
-    // ROS distribution
-    "ros.distro": "noetic",
+    "python.defaultInterpreterPath": "${workspaceFolder}/env_isaaclab/bin/python",
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.defaultProfile.linux": "IsaacLab",
+    "terminal.integrated.profiles.linux": {
+        "IsaacLab": {
+            "path": "/bin/bash",
+            "args": [
+                "--rcfile",
+                "${workspaceFolder}/.vscode/tools/terminal.bash",
+                "-i"
+            ],
+            "icon": "beaker"
+        }
+    },
+    "terminal.integrated.env.linux": {
+        "UV_PROJECT_ENVIRONMENT": "${workspaceFolder}/env_isaaclab",
+        "PATH": "${env:HOME}/.local/bin:${env:PATH}",
+        "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+        "PYTHONUNBUFFERED": "1"
+    },
     // Language specific settings
     "[python]": {
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
     },
     "[restructuredtext]": {
         "editor.tabSize": 2
+    },
+    "[yaml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.formatOnSave": true
+    },
+    "yaml.validate": true,
+    "yaml.schemaStore.enable": false,
+    "evenBetterToml.schema.enabled": false,
+    "evenBetterToml.schema.catalogs": [],
+    "[toml]": {
+        "editor.defaultFormatter": "tamasfe.even-better-toml",
+        "editor.formatOnSave": true
     }
 }

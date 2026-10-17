@@ -1,29 +1,136 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+            "UV_PROJECT_ENVIRONMENT": "${workspaceFolder}/env_isaaclab",
+            "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+            "PYTHONUNBUFFERED": "1",
+            "PATH": "${workspaceFolder}/env_isaaclab/bin:${env:HOME}/.local/bin:${env:PATH}"
+        }
+    },
     "tasks": [
         {
-            // setup python env
+            "label": "Python: Check Environment (uv)",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "python",
+                "-c",
+                "import json, os, sys; print(json.dumps({'python': sys.executable, 'prefix': sys.prefix, 'cwd': os.getcwd(), 'uv_environment': os.environ.get('UV_PROJECT_ENVIRONMENT')}, indent=2))"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "setup_python_env",
-            "type": "shell",
-            "linux": {
-                "command": "uv run isaaclab --editor"
-            },
-            "windows": {
-                "command": "uv run isaaclab --editor"
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "isaaclab",
+                "--editor"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "run_formatter",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "isaaclab",
+                "-f"
+            ],
+            "problemMatcher": [],
+            "options": {
+                "env": {
+                    "UV_PROJECT_ENVIRONMENT": "${workspaceFolder}/env_isaaclab",
+                    "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                    "ISAACLAB_CHANGELOG_BASE_REF": "release/3.0.0",
+                    "PATH": "${workspaceFolder}/env_isaaclab/bin:${env:HOME}/.local/bin:${env:PATH}"
+                }
             }
         },
         {
-            // run formatter
-            "label": "run_formatter",
-            "type": "shell",
-            "linux": {
-                "command": "${workspaceFolder}/isaaclab.sh --format"
-            },
-            "windows": {
-                "command": "${workspaceFolder}/isaaclab.bat --format"
+            "label": "Python: Run Current File (uv)",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "python",
+                "${file}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Python: Test Current File (uv)",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "python",
+                "-m",
+                "pytest",
+                "-v",
+                "-s",
+                "${file}"
+            ],
+            "problemMatcher": [],
+            "group": "test",
+            "options": {
+                "env": {
+                    "UV_PROJECT_ENVIRONMENT": "${workspaceFolder}/env_isaaclab",
+                    "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                    "PYTEST_PLUGINS": "pytest_mock",
+                    "PATH": "${workspaceFolder}/env_isaaclab/bin:${env:HOME}/.local/bin:${env:PATH}"
+                }
             }
+        },
+        {
+            "label": "Python: Editor Checks (uv)",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "source/isaaclab/test/utils/test_editor.py",
+                "source/isaaclab/test/cli/test_uv_run_pyproject.py"
+            ],
+            "options": {
+                "env": {
+                    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                    "PYTEST_PLUGINS": "pytest_mock"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Isaac Lab: Full Tests (isolated processes)",
+            "type": "process",
+            "command": "uv",
+            "args": [
+                "run",
+                "--no-sync",
+                "isaaclab",
+                "-t"
+            ],
+            "problemMatcher": [],
+            "group": "test"
         }
     ]
 }

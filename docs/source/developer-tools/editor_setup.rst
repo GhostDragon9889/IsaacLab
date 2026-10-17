@@ -84,6 +84,7 @@ The command creates or updates these machine-local files:
 * ``.vscode/launch.json``: Debugging configurations. An existing file is preserved.
 * ``.vscode/settings.json``: The interpreter and shared editor settings.
 * ``pyrightconfig.json``: Import paths for Pyright-compatible language servers.
+* ``.vscode/.python-libs``: Editor-only links merging Isaac Sim's split namespace package, when available.
 
 The generated files are ignored by Git because interpreter and extension paths
 vary between machines. Rerun the command after changing Python environments or
@@ -95,6 +96,15 @@ under ``source`` available immediately after cloning. The generated
 ``pyrightconfig.json`` inherits that policy and adds Isaac Sim extensions plus
 Isaac Lab packages found in the active Python environment. This covers source,
 editable, and wheel installations without storing absolute paths in Git.
+For pip-installed Isaac Sim packages that omit VS Code metadata, setup discovers
+the SDK's extension directories (including ``extsDeprecated`` for compatibility imports)
+and Carbonite Python bindings directly. Isaac Sim loads package sources dynamically
+at runtime. The generated source links let static language servers resolve its
+bootstrap exports and extension modules together, even when an extension supplies
+an empty namespace initializer. They point to installed source files and are not
+added to the runtime ``PYTHONPATH``. Creating these links on Windows may require
+Developer Mode; setup prints a warning and keeps the original search paths if
+symbolic links are unavailable.
 
 Configure VS Code
 ^^^^^^^^^^^^^^^^^
@@ -120,6 +130,34 @@ extension (``detachhead.basedpyright``). Then:
 No Cursor-specific path list is required. Pylance and basedpyright read the
 same Pyright configuration.
 
+Source-checkout workflows
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This checkout's shared VS Code settings use ``env_isaaclab``. Terminal tasks run
+``uv run --no-sync`` so they reuse that environment. The **Python: Check
+Environment (uv)** task prints the interpreter and working directory. The
+``.vscode/python.env`` file supplies the local ``src`` path and explicit pytest
+plugin selection to Python testing and debugging.
+
+The Test Explorer defaults to the editor and project-metadata tests, which do
+not launch Kit. Refresh, run, and debug these tests from the Testing view, or
+run the default **Python: Editor Checks (uv)** task. Use **Python: Test Current
+File (uv)** for another pytest file, and **Isaac Lab: Full Tests (isolated
+processes)** for the simulator test orchestrator. The latter runs the ``tools``
+pytest entry point, which dispatches source tests to separate processes.
+
+Use **Python: Current File** or **Python: SinglePytest** in the Run and Debug
+view for breakpoints and stepping. **Navigation: Spawn Simulation** launches
+the project's navigation script with its own configured behavior; opening a
+YAML file does not change the script's selected scene. Existing launch files
+are preserved by setup, so merge new launch entries from the template when
+updating an established workspace.
+
+Ruff handles Python formatting, import organization, and lint diagnostics.
+YAML and TOML use the recommended YAML and Even Better TOML extensions, including
+the TOML syntax used in ``.kit`` files. See ``.vscode/README.md`` for the available
+tasks and debug configurations.
+
 Troubleshoot editor imports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -130,6 +168,13 @@ If an import is still unresolved:
    ``omni``, ``pxr``, or ``isaacsim``.
 3. Reload the editor window.
 4. Inspect the generated ``extraPaths`` in the root ``pyrightconfig.json``.
+5. Keep ``python.analysis.useLibraryCodeForTypes`` enabled for libraries without stubs.
+
+Use **Go to Definition** (``F12`` or ``Ctrl+Click``) on the imported symbol to open
+its source. For APIs implemented in native libraries, only Python wrappers or
+type stubs may be shipped. See `Pylance import troubleshooting
+<https://github.com/microsoft/pylance-release/blob/main/docs/howto/unresolved-imports.md>`__
+for details on namespace packages and static import resolution.
 
 Remove simulator extension directories that the project does not use if
 language-server indexing consumes too much memory.
@@ -149,6 +194,10 @@ To use it:
 
 1. Set your breakpoints.
 2. Run your code under debugpy like so:
+
+   These terminal commands require debugpy in the selected Python environment.
+   F5 launch debugging instead uses the Python Debugger extension's bundled
+   debugpy and does not require a separate environment installation.
 
    .. tab-set::
 

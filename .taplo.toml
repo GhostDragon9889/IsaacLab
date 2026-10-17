@@ -1,0 +1,10 @@
+# Copyright (c) 2022-2026, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+include = ["**/*.toml", "**/*.kit"]
+exclude = ["env_isaaclab/**", ".venv/**", ".git/**", ".vscode/.python-libs/**", "logs/**", "outputs/**"]
+
+[formatting]
+column_width = 120

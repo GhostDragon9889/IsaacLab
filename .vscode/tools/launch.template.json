@@ -1,63 +1,131 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "python": "${config:python.defaultInterpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1"
+            },
+            "name": "Python: Current File",
+            "program": "${file}"
         },
-        // Attach to listening debugpy
-        // Usage (VSCode but should be similar for other IDEs):
-        // 1. Set your breakpoints
-        // 2. Run your code under debugpy like so:
-        //    ./isaaclab.sh -p -m debugpy --listen 3000 --wait-for-client -c "from isaaclab.cli import cli; cli()" [cli_args]
-        // 3. Select this "Python: Debugger Attach" configuration and press green play button or F5
+        {
+            "name": "Navigation: Spawn Simulation",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${config:python.defaultInterpreterPath}",
+            "program": "${workspaceFolder}/src/navigation_data_synthesis/spawn_simulation_sence.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "--/persistent/renderer/startupMessageDisplayed=true"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1"
+            }
+        },
         {
             "name": "Python: Debugger Attach",
-            "type": "python",
+            "type": "debugpy",
             "request": "attach",
-            "port": 3000,
-            "host": "localhost"
+            "connect": {
+                "host": "127.0.0.1",
+                "port": 3000
+            },
+            "justMyCode": false
         },
         {
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${config:python.defaultInterpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1"
+            },
             "name": "Python: Train Environment",
-            "type": "python",
-            "request": "launch",
-            "args" : ["--task", "Isaac-Reach-Franka-v0"],
-            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/train.py",
-            "console": "integratedTerminal"
+            "program": "${workspaceFolder}/env_isaaclab/bin/isaaclab",
+            "args": [
+                "train",
+                "--task",
+                "Isaac-Cartpole",
+                "--num_envs",
+                "64",
+                "--visualizer",
+                "none"
+            ]
         },
         {
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${config:python.defaultInterpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1"
+            },
             "name": "Python: Play Environment",
-            "type": "python",
-            "request": "launch",
-            "args" : ["--task", "Isaac-Reach-Franka-v0", "--num_envs", "32"],
-            "program": "${workspaceFolder}/scripts/reinforcement_learning/rsl_rl/play.py",
-            "console": "integratedTerminal"
+            "program": "${workspaceFolder}/env_isaaclab/bin/isaaclab",
+            "args": [
+                "play",
+                "--task",
+                "Isaac-Cartpole",
+                "--num_envs",
+                "32",
+                "--visualizer",
+                "none"
+            ]
         },
         {
-            "name": "Python: SinglePytest",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
+            "python": "${config:python.defaultInterpreterPath}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1",
+                "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                "PYTEST_PLUGINS": "pytest_mock"
+            },
+            "name": "Python: SinglePytest",
             "module": "pytest",
             "args": [
-              "${file}"
-            ],
-            "console": "integratedTerminal"
+                "-v",
+                "-s",
+                "${file}"
+            ]
         },
         {
-            "name": "Python: ALL Pytest",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "module": "pytest",
-            "args": ["source/isaaclab/test"],
+            "python": "${config:python.defaultInterpreterPath}",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "PYTHONUNBUFFERED": "1"
+            },
+            "name": "Python: ALL Pytest",
+            "module": "pytest",
+            "args": [
+                "tools"
+            ],
+            "subProcess": false
         }
     ]
 }
